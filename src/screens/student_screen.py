@@ -1,4 +1,6 @@
 import time
+import cv2
+import os
 import streamlit as st
 from src.ui.base_layout import (
     style_background_dashboard,
@@ -57,6 +59,7 @@ def student_screen():
         img = np.array(Image.open(uploaded_file))
     if photo_source or uploaded_file:
         with st.spinner("Processing..."):
+            img=cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             detected, all_ids, num_faces = predict_attendance(img)
             if num_faces == 0:
                 st.error(
