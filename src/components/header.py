@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 def header_home():
 
     logo_url = "https://i.ibb.co/YTYGn5qV/logo.png"
@@ -18,9 +17,9 @@ def header_dashboard():
     logo_url = "https://i.ibb.co/YTYGn5qV/logo.png"
     
     st.markdown(f"""
-        <div style="display:flex; align-items:center; justify-content:center; gap:10px">
+        <div style="display:flex; align-items:center; justify-content:center; gap:10px;white-space:nowrap;">
             <img src='{logo_url}' style='height:85px;' />
-            <h1 style='text-align:left; color:#5865F2'>SNAP<br/>CLASS</h1>
+            <h1 style='text-align:left; color:#5865F2;margin:0; white-space:nowrap;font-size:35px;'>SNAP</br>CLASS</h1>
         </div>   
                 
                 """, unsafe_allow_html=True)
