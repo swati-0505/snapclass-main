@@ -54,9 +54,9 @@ def student_screen():
     )
     img = None
     if photo_source:
-        img = np.array(Image.open(photo_source))
+        img = np.array(Image.open(photo_source).convert('RGB'))
     elif uploaded_file:
-        img = np.array(Image.open(uploaded_file))
+        img = np.array(Image.open(uploaded_file).convert('RGB'))
     if photo_source or uploaded_file:
         with st.spinner("Processing..."):
             img=cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -65,6 +65,7 @@ def student_screen():
                 st.error(
                     "No face detected. Please try again."
                 )
+                show_registration = True
             elif num_faces > 1:
                 st.error(
                     "Multiple faces detected. Please ensure only one face is visible."
