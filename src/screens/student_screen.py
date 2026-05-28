@@ -54,12 +54,15 @@ def student_screen():
     )
     img = None
     if photo_source:
-        img = np.array(Image.open(photo_source).convert('RGB'))
+        img = np.array(
+            Image.open(photo_source).convert('RGB')
+        )
     elif uploaded_file:
-        img = np.array(Image.open(uploaded_file).convert('RGB'))
+        img = np.array(
+            Image.open(uploaded_file).convert('RGB')
+        )
     if photo_source or uploaded_file:
         with st.spinner("Processing..."):
-            img=cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             detected, all_ids, num_faces = predict_attendance(img)
             if num_faces == 0:
                 st.error(
@@ -87,6 +90,7 @@ def student_screen():
                         st.session_state.is_logged_in = True
                         st.session_state.user_role = 'student'
                         st.session_state.student_data = student
+
                         st.toast(
                             f"Welcome, {student['name']}!",
                             icon="👋"
@@ -95,7 +99,7 @@ def student_screen():
                         st.rerun()
                 else:
                     st.info(
-                        "Face not recognized. Please try again!"
+                        "Face not recognized. You might be a new student!"
                     )
                     show_registration = True
     if show_registration:
@@ -119,7 +123,9 @@ def student_screen():
                     "Record your voice for enrollment like: I am Present, My name is Alice!"
                 )
             except Exception:
-                st.error("Audio Data Failed!")
+                st.error(
+                    "Audio Data Failed!"
+                )
             if st.button(
                 'Create Account',
                 type='primary'
@@ -134,7 +140,7 @@ def student_screen():
                             voice_emb = None
                             if audio_data:
                                 voice_emb = get_voice_embedding(
-                                    audio_data.read()
+                                    audio_data
                                 )
                             response_data = create_student(
                                 new_name,
