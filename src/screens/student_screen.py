@@ -46,8 +46,16 @@ def student_screen():
     photo_source = st.camera_input(
         "Position your face in the center"
     )
+    uploaded_file = st.file_uploader(
+        "Or upload from gallery",
+        type=["jpg", "jpeg", "png"]
+    )
+    img = None
     if photo_source:
         img = np.array(Image.open(photo_source))
+    elif uploaded_file:
+        img = np.array(Image.open(uploaded_file))
+    if photo_source or uploaded_file:
         with st.spinner("Processing..."):
             detected, all_ids, num_faces = predict_attendance(img)
             if num_faces == 0:
@@ -116,9 +124,6 @@ def student_screen():
                     with st.spinner(
                         "Creating your Profile..."
                     ):
-                        img = np.array(
-                            Image.open(photo_source)
-                        )
                         encodings = get_face_embedding(img)
                         if encodings:
                             face_emb = encodings[0].tolist()
@@ -128,7 +133,7 @@ def student_screen():
                                     audio_data.read()
                                 )
                             response_data = create_student(
-                                name=new_name,
+                                new_name,
                                 face_embedding=face_emb,
                                 voice_embedding=voice_emb
                             )
@@ -155,4 +160,4 @@ def student_screen():
                     st.warning(
                         "Enter your name!"
                     )
-    footer_dashboard() 
+    footer_dashboard()
