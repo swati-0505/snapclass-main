@@ -26,7 +26,6 @@ from src.database.db import (
     create_student
 )
 def student_dashboard():
-
     st.header(
         "Welcome to your Dashboard!"
     )
@@ -36,118 +35,74 @@ def student_screen():
     if "student_data" in st.session_state:
         student_dashboard()
         return
-
     c1, c2 = st.columns(2)
-
     with c1:
-
         header_dashboard()
-
     with c2:
-
         if st.button(
             "Go back to Home",
             type="secondary",
             key="loginbackbtn"
         ):
-
             st.session_state["login_type"] = None
             st.rerun()
-
     st.header("Login using FaceID")
-
     st.write("")
     st.write("")
-
     show_registration = False
-
     photo_source = st.camera_input(
         "Position your face in the center"
     )
-
     uploaded_file = st.file_uploader(
         "Or upload from gallery",
         type=["jpg", "jpeg", "png"]
     )
-
     img = None
-
-    # CAMERA IMAGE
     if photo_source:
-
         try:
-
             img = np.array(
                 Image.open(photo_source).convert("RGB")
             )
-
             img = cv2.cvtColor(
                 img,
                 cv2.COLOR_RGB2BGR
             )
-
         except Exception as e:
-
             st.error(
                 f"Camera Error: {e}"
             )
-
-    # UPLOADED IMAGE
     elif uploaded_file:
-
         try:
-
             img = np.array(
                 Image.open(uploaded_file).convert("RGB")
             )
-
             img = cv2.cvtColor(
                 img,
                 cv2.COLOR_RGB2BGR
             )
-
         except Exception as e:
-
             st.error(
                 f"Upload Error: {e}"
             )
-
-    # FACE LOGIN
     if img is not None:
-
         with st.spinner("Processing Face..."):
-
             try:
-
                 detected, all_ids, num_faces = predict_attendance(img)
-
-                # NO FACE
                 if num_faces == 0:
-
                     st.error(
                         "No face detected. Please try again."
                     )
-
                     show_registration = True
-
-                # MULTIPLE FACES
                 elif num_faces > 1:
-
                     st.error(
                         "Multiple faces detected."
                     )
-
-                # FACE FOUND
                 else:
-
                     if detected:
-
                         student_id = list(
                             detected.keys()
                         )[0]
-
                         all_students = get_all_students()
-
                         student = next(
                             (
                                 s for s in all_students
@@ -155,182 +110,113 @@ def student_screen():
                             ),
                             None
                         )
-
                         if student:
-
                             st.session_state.is_logged_in = True
-
                             st.session_state.user_role = "student"
-
                             st.session_state.student_data = student
-
                             st.success(
                                 f"Welcome {student['name']}!"
                             )
-
                             time.sleep(1)
-
                             st.rerun()
-
                     else:
-
                         st.info(
                             "Face not recognized. Register below."
                         )
-
                         show_registration = True
-
             except Exception as e:
-
                 st.error(
                     f"Face Processing Error: {e}"
                 )
-
                 show_registration = True
-
-    # REGISTRATION
     if show_registration:
-
         with st.container(border=True):
-
             st.header(
                 "Don't have an account? Register here!"
             )
-
             new_name = st.text_input(
                 "Enter your name",
                 placeholder="E.g. John Doe"
             )
-
             st.subheader(
                 "Voice Enrollment"
             )
-
             st.info(
                 "Record your voice for voice attendance."
             )
-
             audio_data = None
-
-            # AUDIO INPUT
             try:
-
                 audio_data = st.audio_input(
                     "Record your voice"
                 )
-
             except Exception as e:
-
                 st.warning(
                     f"Audio Error: {e}"
                 )
-
-            # CREATE ACCOUNT BUTTON
             if st.button(
                 "Create Account",
                 type="primary"
             ):
-
                 if not new_name:
-
                     st.warning(
                         "Please enter your name."
                     )
-
                 elif img is None:
-
                     st.warning(
                         "Please upload face image."
                     )
-
                 else:
-
                     with st.spinner(
                         "Creating Profile..."
                     ):
-
                         try:
-
                             # FACE EMBEDDING
                             encodings = get_face_embedding(img)
-
                             if not encodings:
-
                                 st.error(
                                     "Face encoding failed. Use clearer image."
                                 )
-
                             else:
-
                                 face_emb = encodings[0].tolist()
-
-                                # DEFAULT
                                 voice_emb = None
-
                                 # VOICE EMBEDDING
                                 if audio_data is not None:
-
                                     try:
-
                                         audio_bytes = audio_data.read()
-
                                         if audio_bytes:
-
                                             voice_emb = get_voice_embedding(
                                                 audio_bytes
                                             )
-
                                     except Exception as e:
-
                                         st.warning(
                                             f"Voice skipped: {e}"
                                         )
-
-                                # SAVE STUDENT
                                 response_data = create_student(
                                     new_name,
                                     face_emb,
                                     voice_emb
                                 )
-
-                                # TRAIN MODEL
                                 try:
-
                                     train_classifier()
-
                                 except Exception as e:
-
                                     st.warning(
                                         f"Training skipped: {e}"
                                     )
-
-                                # SUCCESS
                                 if response_data:
-
                                     st.session_state.is_logged_in = True
-
                                     st.session_state.user_role = "student"
-
                                     st.session_state.student_data = response_data[0]
-
                                     st.success(
                                         f"Profile Created Successfully!"
                                     )
-
                                     time.sleep(1)
-
                                     st.rerun()
-
                                 else:
-
                                     st.error(
                                         "Database save failed."
                                     )
-
                         except Exception as e:
-
                             st.error(
                                 f"Registration Error: {e}"
                             )
-
     footer_dashboard()
