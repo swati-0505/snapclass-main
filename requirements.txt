@@ -1,3 +1,4 @@
+streamlit # For building the web application
 numpy # For numerical computations
 pandas # For data manipulation and analysis
 scikit-learn # For machine learning algorithms
@@ -8,6 +9,5 @@ supabase # For database interactions
 bcrypt # For password hashing
 segno # For QR code generation
 pillow # For image processing
-streamlit # For building the web application
 librosa # For audio processing 
 resemblyzer # For speaker verification and voice recognition
