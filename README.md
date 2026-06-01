@@ -39,5 +39,6 @@ recognition — making attendance instant, accurate and paperless.
 ## 👩‍💻 Author
 **Swati Swagatika Sahoo**
 B.Tech CSE @SUIIT
+
 GitHub: https://github.com/swati-0505  
 Live App: https://snapclass-ai-attendance-0505.streamlit.app/
