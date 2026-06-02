@@ -1,17 +1,10 @@
 import time
 import cv2
 import streamlit as st
-from src.ui.base_layout import (
-    style_background_dashboard,
-    style_base_layout
-)
+from src.ui.base_layout import style_background_dashboard, style_base_layout
 from src.components.dialog_enroll import enroll_dialog
-from src.components.header import (
-    header_dashboard
-)
-from src.components.footer import (
-    footer_dashboard
-)
+from src.components.header import header_dashboard
+from src.components.footer import footer_dashboard
 from PIL import Image
 import numpy as np
 from src.pipelines.face_pipeline import (
@@ -19,9 +12,7 @@ from src.pipelines.face_pipeline import (
     get_face_embedding,
     train_classifier
 )
-from src.pipelines.voice_pipeline import (
-    get_voice_embedding
-)
+from src.pipelines.voice_pipeline import get_voice_embedding
 from src.components.subject_card import subject_card
 from src.database.db import (
     get_all_students,
@@ -55,42 +46,41 @@ def student_dashboard():
                 enroll_dialog()
 
         st.divider()
-
         with st.spinner('Loading your enrolled subjects..'):
             subjects = get_student_subjects(student_id)
             logs = get_student_attendance(student_id)
-            stats_map = {}
-            for log in logs:
-                sid = log['subject_id']
-                if sid not in stats_map:
-                    stats_map[sid] = {"total":0, "attended": 0}
-                stats_map[sid]['total'] +=1
-                if log.get('is_present'):
-                        stats_map[sid]['attended'] += 1
-            cols = st.columns(2)
-            for i, sub_node in enumerate(subjects):
-                        sub = sub_node['subjects']
-                        sid = sub['subject_id']
-                        stats = stats_map.get(sid,{"total":0, "attended": 0} )
-                        def unenroll_button():
-                             if st.button("Unenroll from tihs course", type='tertiary', width='stretch', icon=':material/delete_forever:'):
-                                 unenroll_student_to_subject(student_id, sid)
-                                 st.toast(f"Unenrolled from {sub['name']} successfully!")
-                                 st.rerun()
-                        with cols[i % 2]:
-                            subject_card(
-                                name = sub['name'],
-                                code =sub['subject_code'],
-                                section = sub['section'],
-                                stats = [
-                                    ('📅', 'Total', stats['total']),
-                                    ('✅', 'Attended', stats['attended'])
-                                ],
-                                footer_callback=unenroll_button
-                            )
+        stats_map = {}    
+        for log in logs:
+            sid = log['subject_id']
+            if sid not in stats_map:
+                stats_map[sid] = {"total":0, "attended": 0}
+            stats_map[sid]['total'] +=1
+            if log.get('is_present'):
+                stats_map[sid]['attended'] += 1
+        cols = st.columns(2)
+        for i, sub_node in enumerate(subjects):
+            sub = sub_node['subjects']
+            sid = sub['subject_id']
+            stats = stats_map.get(sid,{"total":0, "attended": 0} )
+            def unenroll_button():
+                    if st.button("Unenroll from tihs course", key=f"unenroll_{sid}", type='tertiary', width='stretch', icon=':material/delete_forever:'):
+                        unenroll_student_to_subject(student_id, sid)
+                        st.toast(f"Unenrolled from {sub['name']} successfully!")
+                        st.rerun()
+            with cols[i % 2]:
+                subject_card(
+                    name = sub['name'],
+                    code =sub['subject_code'],
+                    section = sub['section'],
+                    stats = [
+                        ('📅', 'Total', stats['total']),
+                        ('✅', 'Attended', stats['attended'])
+                    ],
+                    footer_callback=unenroll_button
+            )
         footer_dashboard()
 def student_screen():
-    style_background_dashboard()
+    style_background_dashboard()    
     style_base_layout()
     if "student_data" in st.session_state:
         student_dashboard()
@@ -280,3 +270,4 @@ def student_screen():
                                 f"Registration Error: {e}"
                             )
     footer_dashboard()
+    
