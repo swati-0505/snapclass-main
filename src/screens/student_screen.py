@@ -232,7 +232,7 @@ def student_screen():
                                 # VOICE EMBEDDING
                                 if audio_data is not None:
                                     try:
-                                        audio_bytes = audio_data.read()
+                                        audio_bytes = audio_data.getvalue()
                                         if audio_bytes:
                                             voice_emb = get_voice_embedding(
                                                 audio_bytes
