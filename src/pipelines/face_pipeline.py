@@ -102,7 +102,7 @@ def predict_attendance(class_image_np):
         all_students = sorted(
             set(y_train)
         )
-        resemblance_threshold = 0.6
+        resemblance_threshold = 0.5
         for encoding in encodings:
             distances=[np.linalg.norm(np.array(x)-encoding) for x in X_train]
             best_idx=int(np.argmin(distances))
