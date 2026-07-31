@@ -107,6 +107,7 @@ def predict_attendance(class_image_np):
             distances=[np.linalg.norm(np.array(x)-encoding) for x in X_train]
             best_idx=int(np.argmin(distances))
             best_distance=distances[best_idx]
+            st.write(f"DEBUG: Best Distance: {best_distance}, Threshold: {resemblance_threshold}")
             if best_distance < resemblance_threshold:
                 predicted_id=int(y_train[best_idx])
                 detected_student[predicted_id] = True
